@@ -98,7 +98,7 @@ public class GameField extends JPanel implements ActionListener{
         else {
             String str = "Game Over";
             g.setColor(Color.WHITE);
-            g.drawString(str, SIZE / 2 /*125*/, SIZE / 2);
+            g.drawString(str, 140, SIZE / 2);
         }
     }
 
