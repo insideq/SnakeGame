@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Random;
 
 public class GameField extends JPanel implements ActionListener{
@@ -44,6 +46,8 @@ public class GameField extends JPanel implements ActionListener{
         setBackground(Color.BLACK);
         loadImages();
         initGame();
+        addKeyListener(new FieldKeyListener());
+        setFocusable(true);
     }
 
     // метод для инициализации начала игры
@@ -64,8 +68,8 @@ public class GameField extends JPanel implements ActionListener{
     // метод для прорисовки яблока
     public void createApple(){
         // координата по X (рандом от 0 до 19, потому что поле 20 на 20 ячеек) и умножение на размер поля
-        appleX = new Random().nextInt(19) * DOT_SIZE;
-        appleY = new Random().nextInt(19) * DOT_SIZE;
+        appleX = new Random().nextInt(20) * DOT_SIZE;
+        appleY = new Random().nextInt(20) * DOT_SIZE;
     }
 
     // метод для загрузки картинок
@@ -89,6 +93,12 @@ public class GameField extends JPanel implements ActionListener{
             for (int i = 0; i < dots; i++) {
                 g.drawImage(dot, x[i], y[i], this);
             }
+        }
+        // если проиграли, выводим надпись
+        else {
+            String str = "Game Over";
+            g.setColor(Color.WHITE);
+            g.drawString(str, SIZE / 2 /*125*/, SIZE / 2);
         }
     }
 
@@ -114,13 +124,77 @@ public class GameField extends JPanel implements ActionListener{
         }
     }
 
+    // проверка съедания яблока
+    public void checkApple(){
+        // если координаты яблока совпали с координатами головы, то увеличиваем dots и создаем новое яблоко
+        if(x[0] == appleX && y[0] == appleY){
+            dots++;
+            createApple();
+        }
+    }
+
+    // метод для проверки коллизий объектов
+    public void checkCollisions(){
+        // проверка на столкновение змейки с самой собой
+        for (int i = dots; i > 0; i--) {
+            if (i > 4 && x[0] == x[i] && y[0] == y[i]){
+                inGame = false;
+            }
+        }
+        // проверка на выход с игрового поля
+        if(x[0] > SIZE){
+            inGame = false;
+        }
+        if(x[0] < 0){
+            inGame = false;
+        }
+        if(y[0] > SIZE){
+            inGame = false;
+        }
+        if(y[0] < 0){
+            inGame = false;
+        }
+    }
+
     // обработка по таймеру (интерфейс ActionListener)
     @Override
     public void actionPerformed(ActionEvent e) {
         // проверка в игре или нет
         if(inGame){
             move();
+            checkCollisions();
+            checkApple();
         }
         repaint();
+    }
+
+    // создание нового класса, который расширяет(extends) KeyAdapter
+    class FieldKeyListener extends KeyAdapter{
+        @Override
+        public void keyPressed(KeyEvent e) {
+            super.keyPressed(e);
+            int key = e.getKeyCode();
+            // проверки изменение направления в зависимости от клавиш и направления (змейка не может развернуться на 180 градусов)
+            if(key == KeyEvent.VK_LEFT && ! right){
+                left = true;
+                up = false;
+                down = false;
+            }
+            if(key == KeyEvent.VK_RIGHT && ! left){
+                right = true;
+                up = false;
+                down = false;
+            }
+            if(key == KeyEvent.VK_UP && ! down){
+                up = true;
+                right = false;
+                left = false;
+            }
+            if(key == KeyEvent.VK_DOWN && ! up){
+                down = true;
+                left = false;
+                right = false;
+            }
+        }
     }
 }
