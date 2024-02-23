@@ -17,6 +17,8 @@ public class GameField extends JPanel implements ActionListener{
     private Image apple;
     // изображения тела змейки
     private Image dot;
+    // изображение головы змейки
+    private Image head;
     // позиция по Х
     private int appleX;
     // позиция по Y
@@ -81,6 +83,9 @@ public class GameField extends JPanel implements ActionListener{
         // iid - ImageIcon Dot
         ImageIcon iid = new ImageIcon("res/dot.png");
         dot = iid.getImage();
+        // iih - ImageIcon Head
+        ImageIcon iih = new ImageIcon("res/head.png");
+        head = iih.getImage();
     }
 
     // переопределение метода paintComponent
@@ -89,8 +94,12 @@ public class GameField extends JPanel implements ActionListener{
         super.paintComponent(g);
         if (inGame){
             g.drawImage(apple, appleX, appleY, this);
-            // перерисовка всей змейки сразу, голова не отличается
+            // перерисовка головы
             for (int i = 0; i < dots; i++) {
+                g.drawImage(head, x[0], y[0], this);
+            }
+            // перерисовка всей змейки сразу, голова не отличается
+            for (int i = 1; i < dots; i++) {
                 g.drawImage(dot, x[i], y[i], this);
             }
         }
