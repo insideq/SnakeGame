@@ -17,16 +17,21 @@ public class GameField extends JPanel implements ActionListener{
     private Image apple;
     // изображения тела змейки
     private Image dot;
-    // изображение головы змейки
-    private Image head;
-    // позиция по Х
+    // изображение фона (трава)
+    private Image grass;
+    // изображения головы змейки (в зависимости от направления)
+    private Image headright;
+    private Image headleft;
+    private Image headup;
+    private Image headdown;
+    // позиция яблока по Х
     private int appleX;
-    // позиция по Y
+    // позиция яблока по Y
     private int appleY;
     // положение на поле змейки по Х
-    private int[] x = new int[ALL_DOTS];
+    private final int[] x = new int[ALL_DOTS];
     // положение на поле змейки по Y
-    private int[] y = new int[ALL_DOTS];
+    private final int[] y = new int[ALL_DOTS];
     // размер змейки (ячейки)
     private int dots;
     // таймер для отсчета
@@ -77,15 +82,27 @@ public class GameField extends JPanel implements ActionListener{
     // метод для загрузки картинок
     public void loadImages(){
         // используем ImageIcon
+        // iig - ImageIcon Grass
+        ImageIcon iig = new ImageIcon("res/grass.png");
+        grass = iig.getImage();
         // iia - ImageIcon Apple
         ImageIcon iia = new ImageIcon("res/apple.png");
         apple = iia.getImage();
         // iid - ImageIcon Dot
         ImageIcon iid = new ImageIcon("res/dot.png");
         dot = iid.getImage();
-        // iih - ImageIcon Head
-        ImageIcon iih = new ImageIcon("res/head.png");
-        head = iih.getImage();
+        // iihr - ImageIcon Head Right
+        ImageIcon iihr = new ImageIcon("res/headright.png");
+        headright = iihr.getImage();
+        // iihl - ImageIcon Head Left
+        ImageIcon iihl = new ImageIcon("res/headleft.png");
+        headleft = iihl.getImage();
+        // iihu - ImageIcon Head Up
+        ImageIcon iihu = new ImageIcon("res/headup.png");
+        headup = iihu.getImage();
+        // iihd - ImageIcon Head Down
+        ImageIcon iihd = new ImageIcon("res/headdown.png");
+        headdown = iihd.getImage();
     }
 
     // переопределение метода paintComponent
@@ -93,21 +110,54 @@ public class GameField extends JPanel implements ActionListener{
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (inGame){
-            g.drawImage(apple, appleX, appleY, this);
-            // перерисовка головы
-            for (int i = 0; i < dots; i++) {
-                g.drawImage(head, x[0], y[0], this);
+            g.drawImage(grass, 0, 0, null); // трава
+
+            g.drawImage(apple, appleX, appleY, this); // яблоко
+            if(right){
+                for (int i = 0; i < dots; i++) {
+                    if (i == 0){
+                        g.drawImage(headright, x[i], y[i], this);
+                    } else {
+                        g.drawImage(dot, x[i], y[i], this);
+                    }
+                }
             }
-            // перерисовка всей змейки сразу, голова не отличается
-            for (int i = 1; i < dots; i++) {
-                g.drawImage(dot, x[i], y[i], this);
+            if(left){
+                for (int i = 0; i < dots; i++) {
+                    if (i == 0){
+                        g.drawImage(headleft, x[i], y[i], this);
+                    } else {
+                        g.drawImage(dot, x[i], y[i], this);
+                    }
+                }
+            }
+            if(up){
+                for (int i = 0; i < dots; i++) {
+                    if (i == 0){
+                        g.drawImage(headup, x[i], y[i], this);
+                    } else {
+                        g.drawImage(dot, x[i], y[i], this);
+                    }
+                }
+            }
+            if(down){
+                for (int i = 0; i < dots; i++) {
+                    if (i == 0){
+                        g.drawImage(headdown, x[i], y[i], this);
+                    } else {
+                        g.drawImage(dot, x[i], y[i], this);
+                    }
+                }
             }
         }
         // если проиграли, выводим надпись
         else {
-            String str = "Game Over";
+            String str = "Игра закончена";
             g.setColor(Color.WHITE);
-            g.drawString(str, 140, SIZE / 2);
+            g.drawString(str, 126, SIZE / 2);
+            String strRes = "Нажмите R для рестарта";
+            g.setColor(Color.WHITE);
+            g.drawString(strRes, 100, SIZE / 2 + 100);
         }
     }
 
@@ -146,8 +196,9 @@ public class GameField extends JPanel implements ActionListener{
     public void checkCollisions(){
         // проверка на столкновение змейки с самой собой
         for (int i = dots; i > 0; i--) {
-            if (i > 4 && x[0] == x[i] && y[0] == y[i]){
+            if (i > 4 && x[0] == x[i] && y[0] == y[i]) {
                 inGame = false;
+                break;
             }
         }
         // проверка на выход с игрового поля
@@ -162,6 +213,9 @@ public class GameField extends JPanel implements ActionListener{
         }
         if(y[0] < 0){
             inGame = false;
+        }
+        if (!inGame){
+            timer.stop();
         }
     }
 
@@ -184,25 +238,33 @@ public class GameField extends JPanel implements ActionListener{
             super.keyPressed(e);
             int key = e.getKeyCode();
             // проверки изменение направления в зависимости от клавиш и направления (змейка не может развернуться на 180 градусов)
-            if(key == KeyEvent.VK_LEFT && ! right){
+            if((key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A)  && !right){
                 left = true;
                 up = false;
                 down = false;
             }
-            if(key == KeyEvent.VK_RIGHT && ! left){
+            if((key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) && !left){
                 right = true;
                 up = false;
                 down = false;
             }
-            if(key == KeyEvent.VK_UP && ! down){
+            if((key == KeyEvent.VK_UP || key == KeyEvent.VK_W) && !down){
                 up = true;
                 right = false;
                 left = false;
             }
-            if(key == KeyEvent.VK_DOWN && ! up){
+            if((key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S) && !up){
                 down = true;
                 left = false;
                 right = false;
+            }
+            if(!inGame && key == KeyEvent.VK_R){
+                up = false;
+                down = false;
+                left = false;
+                right = true;
+                inGame = true;
+                initGame();
             }
         }
     }
