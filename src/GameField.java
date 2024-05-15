@@ -113,40 +113,14 @@ public class GameField extends JPanel implements ActionListener{
             g.drawImage(grass, 0, 0, null); // трава
 
             g.drawImage(apple, appleX, appleY, this); // яблоко
-            if(right){
-                for (int i = 0; i < dots; i++) {
-                    if (i == 0){
-                        g.drawImage(headright, x[i], y[i], this);
-                    } else {
-                        g.drawImage(dot, x[i], y[i], this);
-                    }
-                }
-            }
-            if(left){
-                for (int i = 0; i < dots; i++) {
-                    if (i == 0){
-                        g.drawImage(headleft, x[i], y[i], this);
-                    } else {
-                        g.drawImage(dot, x[i], y[i], this);
-                    }
-                }
-            }
-            if(up){
-                for (int i = 0; i < dots; i++) {
-                    if (i == 0){
-                        g.drawImage(headup, x[i], y[i], this);
-                    } else {
-                        g.drawImage(dot, x[i], y[i], this);
-                    }
-                }
-            }
-            if(down){
-                for (int i = 0; i < dots; i++) {
-                    if (i == 0){
-                        g.drawImage(headdown, x[i], y[i], this);
-                    } else {
-                        g.drawImage(dot, x[i], y[i], this);
-                    }
+            for (int i = 0; i < dots; i++) {
+                if (i == 0){
+                    if (right) g.drawImage(headright, x[i], y[i], this);
+                    if (left) g.drawImage(headleft, x[i], y[i], this);
+                    if (up) g.drawImage(headup, x[i], y[i], this);
+                    if (down) g.drawImage(headdown, x[i], y[i], this);
+                } else {
+                    g.drawImage(dot, x[i], y[i], this);
                 }
             }
         }
