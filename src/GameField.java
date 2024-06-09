@@ -130,7 +130,6 @@ public class GameField extends JPanel implements ActionListener{
             g.setColor(Color.WHITE);
             g.drawString(str, 126, SIZE / 2);
             String strRes = "Нажмите R для рестарта";
-            g.setColor(Color.WHITE);
             g.drawString(strRes, 100, SIZE / 2 + 100);
         }
     }
